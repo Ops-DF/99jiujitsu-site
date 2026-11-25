@@ -1,0 +1,25 @@
+services:
+  ninenine-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      coolify-edge:
+        aliases:
+          - ninenine-preview-origin
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=coolify-edge
+      - traefik.http.routers.preview-99jiujitsu.rule=Host(`preview-99jiujitsu.tedsptech.com`)
+      - traefik.http.routers.preview-99jiujitsu.tls=true
+      - traefik.http.services.preview-99jiujitsu.loadbalancer.server.port=80
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+networks:
+  coolify-edge:
+    external: true
+    name: coolify-edge
